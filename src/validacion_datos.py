@@ -66,7 +66,7 @@ def verificar_tipo_datos(registro: dict) -> bool:
             return False
 
     for hit in registro["hit"]:
-        if type(hit) != int and type(hit) != bool:
+        if type(hit) != int:
             return False
 
     return True
@@ -91,7 +91,7 @@ def verificar_valores_validos(registro: dict) -> bool:
     
     fases_validas = ["baseline", "tarea"]
     condiciones_validas = ["competencia", "cooperacion"]
-    hits_validos = [0, 1, True, False]
+    hits_validos = [0, 1]
 
     if registro["id_participante"] < 0:
         return False

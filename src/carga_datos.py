@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Apr  5 20:46:37 2026
+
+@author: giuliamaniotti
+"""
+
 def parsear_linea(linea: str) -> list:
     """
     Procesa una línea de texto del archivo de datos, separando sus componentes 
@@ -86,10 +94,6 @@ def cargar_datos(ruta) -> list:
             participantes[id_p]["condicion_experimental"].append(datos[4])
             participantes[id_p]["hit"].append(datos[5])
 
-    return list(participantes.values())#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Apr  5 20:46:37 2026
+    return list(participantes.values())
 
-@author: giuliamaniotti
-"""
+

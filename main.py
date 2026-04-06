@@ -8,7 +8,10 @@ Created on Sun Apr  5 20:49:18 2026
 
 from src.carga_datos import cargar_datos
 from src.procesamiento_datos import filtrar_por_participante
-from src.metricas import (calcular_promedio_senal, calcular_minimo_senal, calcular_maximo_senal, calcular_fc_desde_datos)
+from src.metricas import (calcular_promedio_senal, calcular_minimo_senal, 
+calcular_maximo_senal, calcular_fc_desde_datos)
+from src.validacion_datos import validar_registro
+
 
 def main():
     """
@@ -24,26 +27,31 @@ def main():
     - No retorna valores.
     """
     datos = cargar_datos("datos/datos_proyecto.csv")
+    
+    datos_validos = []
+    for registro in datos:
+        if validar_registro(registro):
+            datos_validos.append(registro)
 
     id_participante = int(input("Ingrese el ID del participante: "))
 
-    participante = filtrar_por_participante(datos, id_participante)
+    participante = filtrar_por_participante(datos_validos, id_participante)
 
     if participante is None:
         print("No se encontró el participante.")
         return
+    
+    promedio = calcular_promedio_senal(participante)
+    minimo = calcular_minimo_senal(participante)
+    maximo = calcular_maximo_senal(participante)
+    frecuencia = calcular_fc_desde_datos(participante)
 
-promedio = calcular_promedio_senal(participante)
-minimo = calcular_minimo_senal(participante)
-maximo = calcular_maximo_senal(participante)
-frecuencia = calcular_fc_desde_datos(participante)
-
-print("\n--- RESULTADOS ---")
-print("ID participante:", id_participante)
-print("Promedio señal ECG:", promedio)
-print("Mínimo ECG:", minimo)
-print("Máximo ECG:", maximo)
-print("Frecuencia cardíaca:", frecuencia, "BPM")
+    print("\n--- RESULTADOS ---")
+    print("ID participante:", id_participante)
+    print("Promedio señal ECG:", promedio)
+    print("Mínimo ECG:", minimo)
+    print("Máximo ECG:", maximo)
+    print("Frecuencia cardíaca:", frecuencia, "BPM")
 
 
 main()

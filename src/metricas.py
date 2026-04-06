@@ -9,7 +9,8 @@ Created on Sun Apr  5 20:46:43 2026
 from src.utils_ecg import detectar_picos_qrs
 
 
-def calcular_promedio_senal(datos: list) -> float:
+def calcular_promedio_senal(datos: dict) -> float:    
+    
     """
     Qué hace la función:
     Calcula el promedio de los valores de la señal ECG.
@@ -28,7 +29,7 @@ def calcular_promedio_senal(datos: list) -> float:
     return sum(senal) / len(senal)
 
 
-def calcular_minimo_senal(datos: list) -> float:
+def calcular_minimo_senal(datos: dict) -> float:
     """
     Qué hace la función:
     Calcula el valor mínimo de la señal ECG.
@@ -47,7 +48,7 @@ def calcular_minimo_senal(datos: list) -> float:
     return min(senal)
 
 
-def calcular_maximo_senal(datos: list) -> float:
+def calcular_maximo_senal(datos: dict) -> float:
     """
     Qué hace la función:
     Calcula el valor máximo de la señal ECG.
@@ -92,7 +93,7 @@ def calcular_frecuencia_cardiaca(picos: list) -> float:
     return frecuencia
 
 
-def calcular_fc_desde_datos(datos: list) -> float:
+def calcular_fc_desde_datos(datos: dict) -> float:
     """
     Qué hace la función:
     Extrae los tiempos y la señal ECG de un participante,
