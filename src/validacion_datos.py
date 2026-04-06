@@ -9,7 +9,7 @@ Created on Sun Apr  5 20:46:41 2026
 def verificar_tipo_datos(registro: dict) -> bool:
     
     """
-    
+    Que hace la funcion:
     Verifica que el registro tenga todas las claves esperadas y que
     cada una sea del tipo de dato correcto.
 
@@ -76,7 +76,7 @@ def verificar_tipo_datos(registro: dict) -> bool:
 def verificar_valores_validos(registro: dict) -> bool:
     
     """
-    
+    Que hace la funcion:
     Verifica que los valores del registro estén dentro de los dominios
     válidos del proyecto PulseLab.
 
@@ -118,7 +118,7 @@ def verificar_valores_validos(registro: dict) -> bool:
 def validar_registro(registro: dict) -> bool:
     
     """
-    
+    Que hace la funcion:
     Valida un registro completo de PulseLab verificando primero
     los tipos de datos y luego los valores permitidos.
 
