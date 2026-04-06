@@ -16,7 +16,7 @@ from src.validacion_datos import validar_registro
 def main():
     """
     Qué hace la función:
-    Coordina el flujo principal del programa. Carga los datos del archivo,
+    Coordina el flujo principal del programa. Carga los datos del archivo,los valido, 
     solicita el ID de un participante, filtra sus datos, calcula métricas
     básicas de la señal ECG y muestra los resultados en pantalla.
 
