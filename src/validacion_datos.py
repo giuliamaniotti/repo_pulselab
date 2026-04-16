@@ -1,60 +1,53 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Apr  5 20:46:41 2026
 
-@author: giuliamaniotti
-"""
-
-def verificar_tipo_datos(registro: dict) -> bool:
-    
+def verificar_tipo_datos(registro):
     """
-    Que hace la funcion:
-    Verifica que el registro tenga todas las claves esperadas y que
-    cada una sea del tipo de dato correcto.
+    Verifica que un registro tenga la estructura correcta y que los tipos de datos sean válidos.
+
+    La función controla que:
+    - El registro contenga todas las claves esperadas.
+    - El identificador del participante sea un número entero.
+    - Todas las listas del registro tengan la misma longitud.
+    - Los datos dentro de cada lista sean del tipo correspondiente:
+        * tiempo: números (int o float)
+        * valor: números (int o float)
+        * fase: texto (str)
+        * condicion_experimental: texto (str)
+        * hit: números enteros (int)
 
     Parámetros:
-    - registro: diccionario con los datos de un participante.
+    - registro (dict): diccionario con los datos de un participante.
 
     Retorna:
-    - True si el registro tiene la estructura y tipos correctos.
-    - False en caso contrario.
-    
+    - bool: True si el registro cumple con la estructura y tipos correctos.
+            False en caso contrario.
     """
-    
-    claves_esperadas = [
-        "id_participante",
-        "tiempo",
-        "valor",
-        "fase",
-        "condicion_experimental",
-        "hit"
-        ]
 
-    for clave in claves_esperadas:
+    claves = ["id_participante", "tiempo", "valor", "fase", "condicion_experimental", "hit"]
+
+    for clave in claves:
         if clave not in registro:
             return False
-    
-    if type(registro["id_participante"]) != int or \
-      type(registro["tiempo"]) != list or \
-      type(registro["valor"]) != list or \
-      type(registro["fase"]) != list or \
-      type(registro["condicion_experimental"]) != list or \
-      type(registro["hit"]) != list:
-       return False        
-   
-    if len(registro["tiempo"]) != len(registro["valor"]) or \
-      len(registro["tiempo"]) != len(registro["fase"]) or \
-      len(registro["tiempo"]) != len(registro["condicion_experimental"]) or \
-      len(registro["tiempo"]) != len(registro["hit"]):
-          return False
+
+    if type(registro["id_participante"]) != int:
+        return False
+
+    cantidad = len(registro["tiempo"])
+
+    if len(registro["valor"]) != cantidad:
+        return False
+    if len(registro["fase"]) != cantidad:
+        return False
+    if len(registro["condicion_experimental"]) != cantidad:
+        return False
+    if len(registro["hit"]) != cantidad:
+        return False
 
     for tiempo in registro["tiempo"]:
-        if type(tiempo) != int and type(tiempo) != float:
+        if type(tiempo) != float and type(tiempo) != int:
             return False
 
     for valor in registro["valor"]:
-        if type(valor) != int and type(valor) != float:
+        if type(valor) != float and type(valor) != int:
             return False
 
     for fase in registro["fase"]:
@@ -73,26 +66,18 @@ def verificar_tipo_datos(registro: dict) -> bool:
 
 
 
+
 def verificar_valores_validos(registro: dict) -> bool:
-    
     """
-    Que hace la funcion:
-    Verifica que los valores del registro estén dentro de los dominios
-    válidos del proyecto PulseLab.
+    Qué hace la función:
+    Verifica que los valores del registro estén dentro de rangos o conjuntos válidos.
 
     Parámetros:
-    - registro: diccionario con los datos de un participante.
+    - registro: dict. Diccionario con los datos de un participante.
 
     Retorna:
-    - True si los valores son válidos.
-    - False si algún valor no cumple con lo esperado.
-  
+    - bool: True si los valores son válidos, False en caso contrario.
     """
-    
-    fases_validas = ["baseline", "tarea"]
-    condiciones_validas = ["competencia", "cooperacion"]
-    hits_validos = [0, 1]
-
     if registro["id_participante"] < 0:
         return False
 
@@ -100,36 +85,34 @@ def verificar_valores_validos(registro: dict) -> bool:
         if tiempo < 0:
             return False
 
+    fases_validas = {"baseline", "estimulo", "recuperacion"}
     for fase in registro["fase"]:
-        if fase not in fases_validas:
+        if fase.strip().lower() not in fases_validas:
             return False
 
+    condiciones_validas = {"control", "experimental"}
     for condicion in registro["condicion_experimental"]:
-        if condicion not in condiciones_validas:
+        if condicion.strip().lower() not in condiciones_validas:
             return False
 
     for hit in registro["hit"]:
-        if hit not in hits_validos:
+        if hit not in [0, 1]:
             return False
 
     return True
 
 
 def validar_registro(registro: dict) -> bool:
-    
     """
-    Que hace la funcion:
-    Valida un registro completo de PulseLab verificando primero
-    los tipos de datos y luego los valores permitidos.
+    Qué hace la función:
+    Integra la validación de tipos y de valores.
 
     Parámetros:
-    - registro: diccionario con los datos de un participante.
+    - registro: dict. Datos de un participante.
 
     Retorna:
-    - True si el registro es válido.
-    - False si no supera alguna validación.
+    - bool: True si el registro es válido, False en caso contrario.
     """
-    
     if not verificar_tipo_datos(registro):
         return False
 
