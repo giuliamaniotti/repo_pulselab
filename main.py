@@ -16,9 +16,11 @@ from src.validacion_datos import validar_registro
 def main():
     """
     Qué hace la función:
-    Coordina el flujo principal del programa. Carga los datos del archivo,los valido, 
-    solicita el ID de un participante, filtra sus datos, calcula métricas
-    básicas de la señal ECG y muestra los resultados en pantalla.
+    Coordina el flujo principal del programa.
+
+    Carga los datos del archivo, valida los registros, solicita el ID de un
+    participante, filtra sus datos, calcula métricas de la señal ECG
+    y muestra los resultados en pantalla.
 
     Parámetros:
     - No recibe parámetros.
@@ -27,20 +29,37 @@ def main():
     - No retorna valores.
     """
     datos = cargar_datos("datos/datos_proyecto.csv")
-    
+
+    if len(datos) == 0:
+        print("No se pudieron cargar datos válidos.")
+        return
+
     datos_validos = []
+
     for registro in datos:
         if validar_registro(registro):
             datos_validos.append(registro)
 
-    id_participante = int(input("Ingrese el ID del participante: "))
+    if len(datos_validos) == 0:
+        print("No hay registros válidos para procesar.")
+        return
+
+    while True:
+        try:
+            id_participante = int(input("Ingrese el ID del participante: "))
+            if id_participante < 0:
+                print("Error: el ID no puede ser negativo.")
+                continue
+            break
+        except ValueError:
+            print("Error: debe ingresar un número entero válido.")
 
     participante = filtrar_por_participante(datos_validos, id_participante)
 
     if participante is None:
         print("No se encontró el participante.")
         return
-    
+
     promedio = calcular_promedio_senal(participante)
     minimo = calcular_minimo_senal(participante)
     maximo = calcular_maximo_senal(participante)
