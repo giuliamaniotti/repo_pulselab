@@ -8,92 +8,93 @@ Created on Sun Apr  5 20:46:37 2026
 
 def parsear_linea(linea: str) -> list:
     """
-    Procesa una línea de texto del archivo de datos, separando sus componentes 
-    y convirtiéndolos a los tipos de datos adecuados.
+    Qué hace la función:
+   Procesa una línea del archivo de datos, separando sus componentes
+   y convirtiéndolos a los tipos correctos.
 
-    Esta función toma una cadena de caracteres que representa una fila del 
-    registro (id_participante, tiempo, valor, fase, condicion_experimental, hit) 
-    y realiza la conversión técnica necesaria para su procesamiento posterior.
+   Parámetros:
+   - linea: str. Línea del archivo CSV.
 
-    Args:
-        linea (str): Una cadena de texto con los campos separados por comas.
+   Retorna:
+   - list: [id_participante, tiempo, valor, fase, condicion_experimental, hit]
 
-    Returns:
-        list: Una lista con los valores convertidos:
-            - id_participante (int)
-            - tiempo (float)
-            - valor (float)
-            - fase (str)
-            - condicion_experimental (str)
-            - hit (int)
+   Lanza:
+   - ValueError: si la línea no tiene 6 campos o si algún dato no puede convertirse.
     """
     partes = linea.strip().split(",")
 
-    id_participante = int(partes[0])
-    tiempo = float(partes[1])
-    valor = float(partes[2])
-    fase = partes[3]
-    condicion_experimental = partes[4]
-    hit = int(partes[5])
+    if len(partes) != 6:
+        raise ValueError("La línea no tiene exactamente 6 campos.")
 
-    return [
-        id_participante,
-        tiempo,
-        valor,
-        fase,
-        condicion_experimental,
-        hit
-    ]
+    try:
+        id_participante = int(partes[0].strip())
+        tiempo = float(partes[1].strip())
+        valor = float(partes[2].strip())
+        fase = partes[3].strip()
+        condicion_experimental = partes[4].strip()
+        hit = int(partes[5].strip())
+    except ValueError as error:
+        raise ValueError(f"Error de conversión en la línea: {linea.strip()}") from error
+
+    return [id_participante, tiempo, valor, fase, condicion_experimental, hit]
+
 
 
 def cargar_datos(ruta) -> list:
+    
     """
-    Carga y estructura los datos fisiológicos y conductuales desde un archivo 
-    de texto siguiendo el modelo de datos del proyecto PulseLab.
+    Qué hace la función:
+    Lee el archivo de datos, parsea cada línea y agrupa los registros por participante.
 
-    La función se encarga de abrir el archivo, recorrer cada línea aplicando 
-    el parseo correspondiente y agrupar la información por participante en 
-    un formato de diccionario.
+    Parámetros:
+    - ruta: str. Ruta al archivo CSV.
 
-    parametros:
-        ruta (str): La ruta local del archivo que contiene los registros.
+    Retorna:
+    - list: lista de diccionarios, uno por participante.
 
-    returns:
-        list: Una lista de diccionarios (registros de participantes). Cada 
-        diccionario contiene las siguientes claves:
-            - "id_participante": int
-            - "tiempo": lista de floats
-            - "valor": lista de floats (señal ECG)
-            - "fase": lista de strings ("baseline" o "tarea")
-            - "condicion_experimental": lista de strings
-            - "hit": lista de ints (eventos conductuales)
+    Manejo de errores:
+    - Si el archivo no existe, devuelve lista vacía.
+    - Si una línea tiene error, la ignora y sigue con la siguiente.
     """
-
     participantes = {}
 
-    with open(ruta, "r") as archivo:
-        next(archivo)
+    try:
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            for numero_linea, linea in enumerate(archivo, start=1):
+                if linea.strip() == "":
+                    continue
 
-        for linea in archivo:
-            datos = parsear_linea(linea)
-            id_p = datos[0]
+                try:
+                    id_participante, tiempo, valor, fase, condicion_experimental, hit = parsear_linea(linea)
+                except ValueError:
+                    print(f"Línea {numero_linea} ignorada por formato inválido.")
+                    continue
 
-            if id_p not in participantes:
-                participantes[id_p] = {
-                    "id_participante": id_p,
-                    "tiempo": [],
-                    "valor": [],
-                    "fase": [],
-                    "condicion_experimental": [],
-                    "hit": []
-                }
+                if id_participante not in participantes:
+                    participantes[id_participante] = {
+                        "id_participante": id_participante,
+                        "tiempo": [],
+                        "valor": [],
+                        "fase": [],
+                        "condicion_experimental": [],
+                        "hit": []
+                    }
 
-            participantes[id_p]["tiempo"].append(datos[1])
-            participantes[id_p]["valor"].append(datos[2])
-            participantes[id_p]["fase"].append(datos[3])
-            participantes[id_p]["condicion_experimental"].append(datos[4])
-            participantes[id_p]["hit"].append(datos[5])
+                participantes[id_participante]["tiempo"].append(tiempo)
+                participantes[id_participante]["valor"].append(valor)
+                participantes[id_participante]["fase"].append(fase)
+                participantes[id_participante]["condicion_experimental"].append(condicion_experimental)
+                participantes[id_participante]["hit"].append(hit)
+
+    except FileNotFoundError:
+        print(f"Error: no se encontró el archivo '{ruta}'.")
+        return []
+    except OSError:
+        print(f"Error: no se pudo abrir el archivo '{ruta}'.")
+        return []
 
     return list(participantes.values())
+    
+        
 
 
