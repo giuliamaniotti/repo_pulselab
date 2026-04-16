@@ -9,18 +9,25 @@ Created on Sun Apr  5 20:46:42 2026
 def filtrar_por_participante(datos: list, id_participante: int) -> dict:
     """
     Qué hace la función:
-    Selecciona y devuelve los datos correspondientes a un participante.
+    Busca y devuelve los datos de un participante según su ID.
 
     Parámetros:
-    - datos: lista de diccionarios con los registros de participantes
-    - id_participante: identificador del participante a buscar
+    - datos: list. Lista de diccionarios con los registros.
+    - id_participante: int. ID del participante a buscar.
 
     Retorna:
-    - dict: datos del participante encontrado
-    - None: si no se encuentra el participante
+    - dict: registro del participante encontrado.
+    - None: si no se encuentra.
     """
-    for participante in datos:
-        if participante["id_participante"] == id_participante:
-            return participante
+    if not isinstance(datos, list):
+        return None
+
+    if not isinstance(id_participante, int):
+        return None
+
+    for registro in datos:
+        if isinstance(registro, dict) and registro.get("id_participante") == id_participante:
+            return registro
 
     return None
+
