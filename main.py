@@ -32,12 +32,8 @@ def main():
     try:
         datos = cargar_datos("datos/PulseLab_mock_data.csv") 
     except Exception as e:
-        print("Error en carga de datos:", e)
-
-
-    if len(datos) == 0:
-        print("No se pudieron cargar datos válidos.")
-        return
+        print("Error en cargar_datos:", e)
+    return
 
     datos_validos = []
 
@@ -65,10 +61,14 @@ def main():
         print("No se encontró el participante.")
         return
 
-    promedio = calcular_promedio_senal(participante)
-    minimo = calcular_minimo_senal(participante)
-    maximo = calcular_maximo_senal(participante)
-    frecuencia = calcular_fc_desde_datos(participante)
+    try:
+        promedio = calcular_promedio_senal(participante)
+        minimo = calcular_minimo_senal(participante)
+        maximo = calcular_maximo_senal(participante)
+        frecuencia = calcular_fc_desde_datos(participante)
+    except Exception as e:
+        print("Error en cálculo de métricas:", e)
+    return
 
     print("\n--- RESULTADOS ---")
     print("ID participante:", id_participante)
