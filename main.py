@@ -28,7 +28,12 @@ def main():
     Retorna:
     - No retorna valores.
     """
-    datos = cargar_datos("MotionLab_mock_data.csv")
+    
+    try:
+        datos = cargar_datos("datos/PulseLab_mock_data.csv") 
+    except Exception as e:
+        print("Error en carga de datos:", e)
+
 
     if len(datos) == 0:
         print("No se pudieron cargar datos válidos.")

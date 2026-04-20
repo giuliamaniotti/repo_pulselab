@@ -32,7 +32,13 @@ def parsear_linea(linea: str) -> list:
         valor = float(partes[2].strip())
         fase = partes[3].strip()
         condicion_experimental = partes[4].strip()
-        hit = int(partes[5].strip())
+        hit_str = partes[5].strip().lower()
+        if hit_str == "true":
+            hit = True
+        elif hit_str == "false":
+            hit = False 
+        else:
+            raise ValueError(f"Valor inválido para hit: {partes[5].strip()}")
     except ValueError as error:
         raise ValueError(f"Error de conversión en la línea: {linea.strip()}") from error
 

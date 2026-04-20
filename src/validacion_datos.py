@@ -59,7 +59,7 @@ def verificar_tipo_datos(registro):
             return False
 
     for hit in registro["hit"]:
-        if type(hit) != int:
+        if type(hit) != bool:
             return False
 
     return True
@@ -85,18 +85,18 @@ def verificar_valores_validos(registro: dict) -> bool:
         if tiempo < 0:
             return False
 
-    fases_validas = {"baseline", "estimulo", "recuperacion"}
+    fases_validas = {"baseline", "tarea"}
     for fase in registro["fase"]:
         if fase.strip().lower() not in fases_validas:
             return False
 
-    condiciones_validas = {"control", "experimental"}
+    condiciones_validas = {"competencia", "cooperacion"}
     for condicion in registro["condicion_experimental"]:
         if condicion.strip().lower() not in condiciones_validas:
             return False
 
     for hit in registro["hit"]:
-        if hit not in [0, 1]:
+        if type(hit) != bool:
             return False
 
     return True
