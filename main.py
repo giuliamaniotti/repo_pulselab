@@ -8,9 +8,12 @@ Created on Sun Apr  5 20:49:18 2026
 
 from src.carga_datos import cargar_datos
 from src.procesamiento_datos import filtrar_por_participante
-from src.metricas import (calcular_promedio_senal, calcular_minimo_senal, 
-calcular_maximo_senal, calcular_fc_desde_datos)
-from src.validacion_datos import validar_registro
+from src.metricas import (
+    calcular_promedio_senal,
+    calcular_minimo_senal,
+    calcular_maximo_senal,
+    calcular_fc_desde_datos
+)
 
 
 def main():
@@ -18,8 +21,8 @@ def main():
     Qué hace la función:
     Coordina el flujo principal del programa.
 
-    Carga los datos del archivo, valida los registros, solicita el ID de un
-    participante, filtra sus datos, calcula métricas de la señal ECG
+    Carga los datos del archivo, solicita el ID de un participante,
+    busca sus datos, calcula las métricas de la señal ECG
     y muestra los resultados en pantalla.
 
     Parámetros:
@@ -27,38 +30,33 @@ def main():
 
     Retorna:
     - No retorna valores.
+
+    Manejo de errores:
+    - Si ocurre un error durante la carga, búsqueda o cálculo,
+      muestra un mensaje de error crítico en consola y finaliza
+      la ejecución.
     """
-    
+
     try:
-        datos = cargar_datos("datos/PulseLab_mock_data_error01.csv") 
+        ruta = "datos/PulseLab_mock_data_error01.csv"
+        datos = cargar_datos(ruta)
     except Exception as e:
-        print("Error en cargar_datos:", e)
+        print(f"[ERROR CRÍTICO] Tipo de error encontrado: {e} | Ubicación: cargar_datos")
         return
 
-    datos_validos = []
+    try:
+        id_participante = int(input("Ingrese el ID del participante: "))
 
-    for registro in datos:
-        if validar_registro(registro):
-            datos_validos.append(registro)
-
-    if len(datos_validos) == 0:
-        print("No hay registros válidos para procesar.")
+        if id_participante <= 0:
+            raise ValueError("El ID del participante debe ser un entero positivo.")
+    except ValueError as e:
+        print(f"[ERROR CRÍTICO] Tipo de error encontrado: {e} | Ubicación: main")
         return
 
-    while True:
-        try:
-            id_participante = int(input("Ingrese el ID del participante: "))
-            if id_participante < 0:
-                print("Error: el ID no puede ser negativo.")
-                continue
-            break
-        except ValueError:
-            print("Error: debe ingresar un número entero válido.")
-
-    participante = filtrar_por_participante(datos_validos, id_participante)
-
-    if participante is None:
-        print("No se encontró el participante.")
+    try:
+        participante = filtrar_por_participante(datos, id_participante)
+    except Exception as e:
+        print(f"[ERROR CRÍTICO] Tipo de error encontrado: {e} | Ubicación: filtrar_por_participante")
         return
 
     try:
@@ -67,15 +65,15 @@ def main():
         maximo = calcular_maximo_senal(participante)
         frecuencia = calcular_fc_desde_datos(participante)
     except Exception as e:
-        print("Error en cálculo de métricas:", e)
+        print(f"[ERROR CRÍTICO] Tipo de error encontrado: {e} | Ubicación: metricas")
         return
 
     print("\n--- RESULTADOS ---")
-    print("ID participante:", id_participante)
-    print("Promedio señal ECG:", promedio)
-    print("Mínimo ECG:", minimo)
-    print("Máximo ECG:", maximo)
-    print("Frecuencia cardíaca:", frecuencia, "BPM")
+    print(f"ID participante: {id_participante}")
+    print(f"Promedio señal ECG: {promedio}")
+    print(f"Mínimo ECG: {minimo}")
+    print(f"Máximo ECG: {maximo}")
+    print(f"Frecuencia cardíaca: {frecuencia} BPM")
 
 
 main()
