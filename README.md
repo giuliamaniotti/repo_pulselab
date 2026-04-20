@@ -47,98 +47,199 @@ sobre la actividad cardíaca en diferentes condiciones experimentales.
 
 ## Errores y Validaciones
 
-### `parsear_linea(linea)`
-- Error si la línea no tiene la cantidad correcta de datos.
-- Error si no se pueden convertir los valores a números.
-- Se usa `try/except` para evitar que el programa se rompa.
+El sistema está diseñado para detectar errores en los datos y detener la ejecución de forma controlada, informando el problema.
+
+---
+
+### `parsear_linea(linea, numero_linea)`
+- Error si la línea está vacía.
+- Error si no tiene exactamente 6 columnas.
+- Error si hay campos vacíos.
+- Error si los datos no pueden convertirse a los tipos correctos.
+- Error si el ID no es entero positivo.
+- Error si el tiempo es negativo.
+- Error si el valor ECG está fuera de rango.
+- Error si la fase o condición no son válidas.
+- Error si `hit` no es "True" o "False".
 
 ---
 
 ### `cargar_datos(ruta)`
-- Error si el archivo no existe.
-- Error si una línea está mal formada.
-- Se usa `try/except` para abrir el archivo y para procesar cada línea.
-- Las líneas con error se ignoran.
-
----
-
-### `verificar_tipo_datos(registro)`
-- Verifica que estén todas las claves necesarias.
-- Controla que los tipos de datos sean correctos.
-- Verifica que todas las listas tengan la misma longitud.
-- Si algo está mal, devuelve `False`.
-
----
-
-### `verificar_valores_validos(registro)`
-- Controla que los valores estén dentro de rangos válidos.
-- Ejemplo:
-  - tiempos no negativos
-  - valores de `hit` sean 0 o 1
-- Si encuentra un error, devuelve `False`.
-
----
-
-### `validar_registro(registro)`
-- Combina las dos validaciones anteriores.
-- Solo devuelve `True` si todo está correcto.
+- Error si la ruta es inválida.
+- Error si el archivo no existe o no puede abrirse.
+- Error si el archivo está vacío.
+- Error si alguna línea contiene datos inválidos.
+- Error si el tiempo no es creciente para un participante.
+- Error si la base de datos queda vacía luego de la carga.
 
 ---
 
 ### `filtrar_por_participante(datos, id_participante)`
-- Si el participante no existe, devuelve `None`.
-- Se controla esto en el programa principal.
+- Error si los datos no son una lista.
+- Error si la base de datos está vacía.
+- Error si el ID no es entero.
+- Error si el participante no existe.
 
 ---
 
 ### `calcular_promedio_senal(datos)`
-- Si la señal está vacía, devuelve `0`.
-- Evita errores de división.
+- Error si los datos no tienen formato válido.
+- Error si no hay datos suficientes para calcular.
 
 ---
 
 ### `calcular_minimo_senal(datos)`
-- Si no hay datos, devuelve `0`.
+- Error si los datos no tienen formato válido.
+- Error si no hay datos suficientes para calcular.
 
 ---
 
 ### `calcular_maximo_senal(datos)`
-- Si no hay datos, devuelve `0`.
+- Error si los datos no tienen formato válido.
+- Error si no hay datos suficientes para calcular.
 
 ---
 
 ### `detectar_picos_qrs(tiempos, senal)`
-- Si las listas están vacías o tienen distinto tamaño, devuelve lista vacía.
-- Si no detecta picos, devuelve lista vacía.
+- Error si las listas no tienen el formato correcto.
+- Error si no hay datos suficientes para detectar picos.
 
 ---
 
 ### `calcular_frecuencia_cardiaca(picos)`
-- Si hay menos de dos picos, devuelve `0`.
-- Evita dividir por cero.
+- Error si los picos no tienen formato válido.
+- Error si hay menos de dos picos.
+- Error si el intervalo de tiempo no es válido.
 
 ---
 
 ### `calcular_fc_desde_datos(datos)`
-- Usa las funciones anteriores.
-- Si no se pueden calcular los picos, devuelve `0`.
+- Error si los datos no tienen formato válido.
+- Error si no hay datos suficientes para detectar picos.
+- Error si no se detectan suficientes picos.
 
 ---
 
 ### `main()`
-- Usa `try/except` para validar el input del usuario.
-- Si el usuario ingresa algo incorrecto, se vuelve a pedir.
-- Si el participante no existe, se muestra un mensaje.
-- Si no hay datos válidos, el programa termina sin romperse.
+- Maneja los errores con `try/except`.
+- Muestra errores con formato:
+
+---
+
+## Modelado del sistema usando Objetos
+
+Aunque en esta entrega no implementamos Programación Orientada a Objetos, el sistema puede modelarse utilizando clases para organizar mejor sus responsabilidades.
+
+---
+
+### Clase `RegistroECG`
+
+Representa una línea del archivo CSV.
+
+**Atributos:**
+- id_participante: int  
+- tiempo: float  
+- valor: float  
+- fase: str  
+- condicion_experimental: str  
+- hit: bool  
+
+**Métodos:**
+- validar_tipos()  
+- validar_valores()  
+- to_dict()  
+
+---
+
+### Clase `Participante`
+
+Representa a un participante con todos sus datos agrupados.
+
+**Atributos:**
+- id_participante: int  
+- tiempos: list  
+- valores: list  
+- fases: list  
+- condiciones_experimentales: list  
+- hits: list  
+
+**Métodos:**
+- agregar_registro(registro)  
+- validar_tiempo_creciente()  
+- calcular_promedio_senal()  
+- calcular_minimo_senal()  
+- calcular_maximo_senal()  
+- calcular_frecuencia_cardiaca()  
+
+---
+
+### Clase `CargadorCSV`
+
+Se encarga de leer y validar el archivo.
+
+**Atributos:**
+- ruta: str  
+- lineas: list  
+
+**Métodos:**
+- abrir_archivo()  
+- parsear_linea()  
+- cargar_datos()  
+
+---
+
+### Clase `AnalizadorECG`
+
+Se encarga del cálculo de métricas.
+
+**Atributos:**
+- participante: Participante  
+
+**Métodos:**
+- validar_datos_metricas()  
+- calcular_promedio_senal()  
+- calcular_minimo_senal()  
+- calcular_maximo_senal()  
+- calcular_frecuencia_cardiaca()  
+
+---
+
+### Clase `DetectorPicosQRS`
+
+Encapsula el algoritmo de detección de picos.
+
+**Atributos:**
+- tiempos: list  
+- senal: list  
+
+**Métodos:**
+- detectar_picos()  
+- validar_senal()  
+
+---
+
+### Clase `SistemaPulseLab`
+
+Coordina todo el flujo del programa.
+
+**Atributos:**
+- ruta_archivo: str  
+- participantes: list  
+
+**Métodos:**
+- iniciar()  
+- cargar_participantes()  
+- buscar_participante(id)  
+- mostrar_resultados()  
+- manejar_errores()  
 
 ---
 
 ## Observaciones
 
-El programa está pensado para manejar errores sin interrumpirse, usando:
-- `try/except` cuando puede fallar algo externo (archivo o input),
-- validaciones con `if` en el resto de las funciones.
+El programa está diseñado para:
+- detectar errores en la entrada de datos,
+- detener la ejecución de forma controlada,
+- y comunicar claramente el problema.
 
-Además, cada función cumple una tarea específica, lo que hace el código más claro y fácil de mantener.
-
-
+Además, cada módulo cumple una función específica, lo que hace al sistema más claro, modular y fácil de mantener.
