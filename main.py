@@ -28,7 +28,7 @@ def main():
     Retorna:
     - No retorna valores.
     """
-    datos = cargar_datos("datos/datos_proyecto.csv")
+    datos = cargar_datos("MotionLab_mock_data.csv")
 
     if len(datos) == 0:
         print("No se pudieron cargar datos válidos.")
