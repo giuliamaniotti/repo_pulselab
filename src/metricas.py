@@ -1,29 +1,69 @@
 from src.detectar_picos import detectar_picos_qrs
 
 
-def calcular_promedio_senal(datos: dict) -> float:
+def validar_datos_metricas(datos: dict) -> None:
+    
     """
     Qué hace la función:
-    Calcula el promedio de los valores de la señal ECG.
+    Verifica que los datos de un participante tengan la estructura mínima
+    necesaria para poder calcular métricas básicas sobre la señal ECG.
+
+    Parámetros:
+    - datos: dict. Diccionario con los datos de un participante.
+
+    Retorna:
+    - None. La función no devuelve ningún valor; solo valida.
+      Si encuentra un problema, lanza una excepción.
+
+    Lanza:
+    - TypeError: si los datos no se reciben en un diccionario.
+    - ValueError: si faltan campos necesarios para calcular métricas.
+    - ValueError: si las listas de tiempo o valor están vacías.
+    - ValueError: si las listas de tiempo y valor tienen distinta longitud.
+    """
+    
+    if not isinstance(datos, dict):
+        raise TypeError("Los datos deben ser un diccionario.")
+
+    if "tiempo" not in datos or "valor" not in datos:
+        raise ValueError("Faltan campos necesarios para calcular métricas.")
+
+    tiempos = datos["tiempo"]
+    valores = datos["valor"]
+
+    if not isinstance(tiempos, list) or not isinstance(valores, list):
+        raise TypeError("Los campos 'tiempo' y 'valor' deben ser listas.")
+
+    if len(tiempos) == 0 or len(valores) == 0:
+        raise ValueError("No hay datos suficientes para calcular métricas.")
+
+    if len(tiempos) != len(valores):
+        raise ValueError("Las listas 'tiempo' y 'valor' deben tener el mismo largo.")
+
+
+def calcular_promedio_senal(datos: dict) -> float:
+    
+    """
+    Qué hace la función:
+    Calcula el promedio aritmético de los valores de la señal ECG.
 
     Parámetros:
     - datos: dict. Datos del participante.
 
     Retorna:
-    - float. Promedio de la señal.
+    - float: promedio de la señal ECG.
+
+    Lanza:
+    - TypeError: si los datos no tienen el formato esperado.
+    - ValueError: si no hay datos suficientes para calcular el promedio.
     """
-    if not isinstance(datos, dict):
-        return 0
-
-    senal = datos.get("valor", [])
-
-    if not isinstance(senal, list) or len(senal) == 0:
-        return 0
-
-    return sum(senal) / len(senal)
+    
+    validar_datos_metricas(datos)
+    return sum(datos["valor"]) / len(datos["valor"])
 
 
 def calcular_minimo_senal(datos: dict) -> float:
+    
     """
     Qué hace la función:
     Calcula el valor mínimo de la señal ECG.
@@ -32,20 +72,19 @@ def calcular_minimo_senal(datos: dict) -> float:
     - datos: dict. Datos del participante.
 
     Retorna:
-    - float. Valor mínimo de la señal.
+    - float: valor mínimo de la señal ECG.
+
+    Lanza:
+    - TypeError: si los datos no tienen el formato esperado.
+    - ValueError: si no hay datos suficientes para calcular el mínimo.
     """
-    if not isinstance(datos, dict):
-        return 0
-
-    senal = datos.get("valor", [])
-
-    if not isinstance(senal, list) or len(senal) == 0:
-        return 0
-
-    return min(senal)
+    
+    validar_datos_metricas(datos)
+    return min(datos["valor"])
 
 
 def calcular_maximo_senal(datos: dict) -> float:
+    
     """
     Qué hace la función:
     Calcula el valor máximo de la señal ECG.
@@ -54,40 +93,46 @@ def calcular_maximo_senal(datos: dict) -> float:
     - datos: dict. Datos del participante.
 
     Retorna:
-    - float. Valor máximo de la señal.
+    - float: valor máximo de la señal ECG.
+
+    Lanza:
+    - TypeError: si los datos no tienen el formato esperado.
+    - ValueError: si no hay datos suficientes para calcular el máximo.
     """
-    if not isinstance(datos, dict):
-        return 0
-
-    senal = datos.get("valor", [])
-
-    if not isinstance(senal, list) or len(senal) == 0:
-        return 0
-
-    return max(senal)
+    
+    validar_datos_metricas(datos)
+    return max(datos["valor"])
 
 
 def calcular_frecuencia_cardiaca(picos: list) -> float:
+    
     """
     Qué hace la función:
-    Calcula la frecuencia cardíaca en BPM a partir de los picos detectados.
+    Calcula la frecuencia cardíaca en BPM a partir de los tiempos
+    en los que se detectaron picos QRS.
 
     Parámetros:
     - picos: list. Lista de tiempos donde se detectaron picos.
 
     Retorna:
-    - float. Frecuencia cardíaca en latidos por minuto.
+    - float: frecuencia cardíaca en latidos por minuto.
+
+    Lanza:
+    - TypeError: si picos no es una lista.
+    - ValueError: si hay menos de dos picos.
+    - ValueError: si el tiempo total entre el primer y el último pico no es válido.
     """
+    
     if not isinstance(picos, list):
-        return 0
+        raise TypeError("Los picos deben recibirse en una lista.")
 
     if len(picos) < 2:
-        return 0
+        raise ValueError("No hay picos suficientes para calcular la frecuencia cardíaca.")
 
     tiempo_total = picos[-1] - picos[0]
 
     if tiempo_total <= 0:
-        return 0
+        raise ValueError("El intervalo de tiempo entre picos no es válido.")
 
     cantidad_intervalos = len(picos) - 1
     frecuencia = (cantidad_intervalos / tiempo_total) * 60
@@ -96,28 +141,38 @@ def calcular_frecuencia_cardiaca(picos: list) -> float:
 
 
 def calcular_fc_desde_datos(datos: dict) -> float:
+    
     """
     Qué hace la función:
-    Detecta los picos de la señal y calcula la frecuencia cardíaca.
+    Detecta los picos QRS de la señal ECG y calcula la frecuencia cardíaca
+    del participante en latidos por minuto.
 
     Parámetros:
     - datos: dict. Datos del participante.
 
     Retorna:
-    - float. Frecuencia cardíaca en BPM.
+    - float: frecuencia cardíaca en BPM.
+
+    Lanza:
+    - TypeError: si los datos no tienen el formato esperado.
+    - ValueError: si no hay datos suficientes para detectar picos.
+    - ValueError: si no se detectan picos suficientes para calcular
+      la frecuencia cardíaca.
     """
-    if not isinstance(datos, dict):
-        return 0
+    
+    validar_datos_metricas(datos)
 
-    tiempos = datos.get("tiempo", [])
-    senal = datos.get("valor", [])
+    tiempos = datos["tiempo"]
+    senal = datos["valor"]
 
-    if not isinstance(tiempos, list) or not isinstance(senal, list):
-        return 0
+    if len(tiempos) < 3:
+        raise ValueError("No hay datos suficientes para detectar picos.")
 
     picos = detectar_picos_qrs(tiempos, senal)
+
+    if len(picos) < 2:
+        raise ValueError("No hay picos suficientes para calcular la frecuencia cardíaca.")
+
     return calcular_frecuencia_cardiaca(picos)
-
-
 
 
