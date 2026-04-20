@@ -30,7 +30,7 @@ def main():
     """
     
     try:
-        datos = cargar_datos("datos/PulseLab_mock_data.csv") 
+        datos = cargar_datos("datos/PulseLab_mock_data_error01.csv") 
     except Exception as e:
         print("Error en cargar_datos:", e)
         return
