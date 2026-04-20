@@ -66,14 +66,13 @@ def cargar_datos(ruta) -> list:
 
     try:
         with open(ruta, "r", encoding="utf-8") as archivo:
-            for numero_linea, linea in enumerate(archivo, start=1):
+            for linea in archivo:
                 if linea.strip() == "":
                     continue
 
                 try:
                     id_participante, tiempo, valor, fase, condicion_experimental, hit = parsear_linea(linea)
                 except ValueError:
-                    print(f"Línea {numero_linea} ignorada por formato inválido.")
                     continue
 
                 if id_participante not in participantes:
