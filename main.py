@@ -33,7 +33,7 @@ def main():
         datos = cargar_datos("datos/PulseLab_mock_data.csv") 
     except Exception as e:
         print("Error en cargar_datos:", e)
-    return
+        return
 
     datos_validos = []
 
@@ -68,7 +68,7 @@ def main():
         frecuencia = calcular_fc_desde_datos(participante)
     except Exception as e:
         print("Error en cálculo de métricas:", e)
-    return
+        return
 
     print("\n--- RESULTADOS ---")
     print("ID participante:", id_participante)
