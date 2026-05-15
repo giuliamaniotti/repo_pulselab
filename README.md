@@ -234,6 +234,41 @@ Coordina todo el flujo del programa.
 - manejar_errores()  
 
 ---
+## Implementación de Pandas para la lectura del dataset
+
+Para mejorar la lectura, organización y procesamiento de los datos del proyecto PulseLab, 
+se podría implementar la librería `pandas`.
+
+Actualmente, el programa trabaja con archivos CSV y organiza la información usando 
+listas y diccionarios. Con Pandas, la lectura del dataset podría realizarse de manera 
+más simple usando la función `pandas.read_csv()`, que permite cargar el archivo 
+directamente como un DataFrame.
+
+El uso de Pandas permitiría:
+- leer el archivo CSV de forma más clara y eficiente;
+- organizar los datos en filas y columnas;
+- filtrar fácilmente la información por participante;
+- validar valores faltantes o incorrectos;
+- calcular métricas de manera más directa;
+- reducir la cantidad de código necesario para recorrer listas manualmente.
+
+### Funciones que deberían modificarse
+
+#### `cargar_datos(ruta)`
+
+Esta función debería modificarse para que utilice `pandas.read_csv()` en lugar de abrir 
+y leer el archivo línea por línea.
+
+En lugar de transformar manualmente cada línea del CSV en una estructura de 
+listas y diccionarios, la función podría cargar el dataset completo como un DataFrame.
+
+Ejemplo descriptivo:
+
+python
+import pandas as pd
+
+datos = pd.read_csv(ruta)
+
 
 ## Observaciones
 
